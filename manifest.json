@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "name": "Tab2ChatGPT",
+  "version": "0.2.0",
+  "description": "Seamless in-page AI handoff with text and screenshot context.",
+  "permissions": ["tabs", "scripting", "storage", "activeTab"],
+  "host_permissions": [
+    "<all_urls>",
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "https://gemini.google.com/*",
+    "https://claude.ai/*"
+  ],
+  "action": {
+    "default_title": "Tab2ChatGPT"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "commands": {
+    "toggle-assistant": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+K",
+        "mac": "Command+Shift+K"
+      },
+      "description": "Toggle the in-page assistant"
+    },
+    "quick-send-default": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Quick send current page to default provider"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": [
+        "node_modules/@mozilla/readability/Readability-readerable.js",
+        "node_modules/@mozilla/readability/Readability.js",
+        "content-dock-renderer.js",
+        "content-dock-context.js",
+        "content-dock-ui.js",
+        "content-dock.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://gemini.google.com/*",
+        "https://claude.ai/*"
+      ],
+      "js": [
+        "provider-bridge-config.js",
+        "provider-bridge-utils.js",
+        "provider-bridge-scrape.js",
+        "provider-bridge-stream.js",
+        "provider-bridge-actions.js",
+        "provider-bridge.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
